@@ -81,30 +81,49 @@ app.post('/complete-task', async (req, res) => {
   const { taskIds } = req.body;
 
   try {
-    await Task.updateMany(
+    // Marcar as tarefas como concluídas
+    const tasks = await Task.updateMany(
       { _id: { $in: taskIds } },
       { $set: { completed: true } }
     );
-    res.json({ message: 'Tarefas marcadas como concluídas!' });
 
     // Enviar notificação via WhatsApp
-    await sendWhatsAppMessage('Tarefas selecionadas foram concluídas!');
+    await sendWhatsAppMessage('');
+
+    // Enviar notificação para cada tarefa concluída
+    for (const taskId of taskIds) {
+      const task = await Task.findById(taskId); // Obtém a tarefa para pegar o título
+      if (task) {
+        await sendWhatsAppMessage(`Tarefa "${task.title}" foi concluída com sucesso!`);
+      }
+    }
+
+    res.json({ message: '' });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: 'Erro ao concluir tarefas.' });
   }
 });
 
+
 // Endpoint para excluir tarefas
 app.post('/delete-task', async (req, res) => {
   const { taskIds } = req.body;
 
   try {
+    // Obtém as tarefas para enviar notificação
+    const tasks = await Task.find({ _id: { $in: taskIds } });
+
     await Task.deleteMany({ _id: { $in: taskIds } });
-    res.json({ message: 'Tarefas excluídas com sucesso!' });
+    res.json({ message: '' });
 
     // Enviar notificação via WhatsApp
-    await sendWhatsAppMessage('Tarefas selecionadas foram excluídas!');
+    await sendWhatsAppMessage('');
+
+    // Enviar notificação para cada tarefa excluída
+    for (const task of tasks) {
+      await sendWhatsAppMessage(`Tarefa "${task.title}" foi excluída com sucesso!`);
+    }
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: 'Erro ao excluir tarefas.' });
