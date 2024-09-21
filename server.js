@@ -10,7 +10,7 @@ const PORT = 3000;
 
 // Twilio Credentials (Substitua pelas suas credenciais)
 const accountSid = 'ACecfb01446fe6802641f29b9cdbb3f727'; // Encontre no painel do Twilio
-const authToken = '94e6ae509e0b0a099233e7537a70b838';   // Encontre no painel do Twilio
+const authToken = '57bd91a26f8f7cfd5883d56426fa6ff6';   // Encontre no painel do Twilio
 const client = twilio(accountSid, authToken);
 
 // Middleware
@@ -43,7 +43,7 @@ async function sendWhatsAppMessage(message) {
   try {
     await client.messages.create({
       body: message,
-      from: 'whatsapp:+14155238886', // Número do sandbox do Twilio
+      from: 'whatsapp:+14155238886', // Número do Twilio Sandbox
       to: 'whatsapp:+5519994552925' // walace
     });
     console.log('Mensagem enviada via WhatsApp');
